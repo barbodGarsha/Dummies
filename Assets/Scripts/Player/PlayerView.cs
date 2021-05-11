@@ -10,18 +10,14 @@ public class PlayerView : MonoBehaviour
     {
         GameData.Instance.playerPos = this.gameObject.transform.position;
         PlayerController player_controller = GetComponent<PlayerController>();
-        player_controller.OnPlayerPosChange += HandleOnPlayerPosChange;
+        player_controller.OnPlayerStateChange += HandleOnPlayerStateChange;
     }
 
-    void HandleOnPlayerPosChange(object sender, EventArgs e) 
+    void HandleOnPlayerStateChange(object sender, EventArgs e) 
     {
-        SyncPosition();
+
     }
 
-    void SyncPosition()
-    {
-        this.gameObject.transform.position = GameData.Instance.playerPos;
-    }
 
     // Update is called once per frame
     void FixedUpdate()
