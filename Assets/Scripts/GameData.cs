@@ -22,4 +22,15 @@ public class GameData : ScriptableObject
 	}
 
 	public Vector2 playerPos;
+
+    public enum PlayerState
+    {
+		IDLE,
+		RUN_RIGHT,
+		RUN_LEFT,
+		JUMP,
+		PUSH_RIGHT
+	}
+
+	public PlayerState playerState = PlayerState.IDLE;
 }

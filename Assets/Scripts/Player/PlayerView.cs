@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
+    public Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,7 +17,7 @@ public class PlayerView : MonoBehaviour
 
     void HandleOnPlayerStateChange(object sender, EventArgs e) 
     {
-
+        //AnimationControl
     }
 
 
