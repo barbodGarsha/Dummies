@@ -28,7 +28,8 @@ public class PlayerController : MonoBehaviour
     public event EventHandler OnPlayerStateChange;
     public event EventHandler OnUserInput;
 
-    bool playerVelocityChanged = false;
+    bool playerVelocityChanged = false, stopPlayer = false, jump = false;
+    float playerVelocity = 0;
 
     private void Start()
     {
@@ -103,34 +104,45 @@ public class PlayerController : MonoBehaviour
     //Movement
     void FixedUpdate()
     {
-        if (playerVelocityChanged)
+        if (jump)
         {
-            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-            playerVelocityChanged = false;
+            rb.AddForce(Vector2.up * jumpPower);
+            GameData.Instance.playerState = GameData.PlayerState.JUMP;
+            jump = false;
+            landed = false;
         }
-        switch (GameData.Instance.playerState)
+        if (stopPlayer)
         {
-            case GameData.PlayerState.IDLE:
-                rb.velocity = Vector2.zero;
-                rb.angularVelocity = 0;
-                break;
-            case GameData.PlayerState.RUN_RIGHT:
-                rb.AddForce(Vector2.right * TestSpeed);
-                rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-                break;
-            case GameData.PlayerState.RUN_LEFT:
-                rb.AddForce(Vector2.left * TestSpeed);
-                rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-                break;
-            case GameData.PlayerState.JUMP:
-                rb.AddForce(Vector2.up * jumpPower);
-                rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-                break;
-            case GameData.PlayerState.PUSH_RIGHT:
-                break;
-            default:
-                break;
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0;
+            GameData.Instance.playerState = GameData.PlayerState.IDLE;
+            stopPlayer = false;
+            playerVelocity = 0.0f;
         }
+        rb.AddForce(Vector2.right * playerVelocity);
+        rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
+       
+
+        if (landed)
+        {
+
+            Debug.Log(GameData.Instance.playerState);
+            if (rb.velocity.x < 0.1f && rb.velocity.x > -0.1f)
+            {
+                GameData.Instance.playerState = GameData.PlayerState.IDLE;
+            }
+            else if (rb.velocity.x > 0.1f)
+            {
+                GameData.Instance.playerState = GameData.PlayerState.RUN_RIGHT;
+            }
+            else
+            {
+                GameData.Instance.playerState = GameData.PlayerState.RUN_LEFT;
+            }
+        }
+
+
+        
         
         //if (Input.GetKey(KeyCode.RightArrow))
          //{
@@ -154,6 +166,14 @@ public class PlayerController : MonoBehaviour
          //}
     }
 
+    bool landed = true;
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Ground")
+        {
+            landed = true;
+        }
+    }
     //Input Check and State Machine
     void HandleOnUserInput(object sender, EventArgs e)
     {
@@ -183,23 +203,21 @@ public class PlayerController : MonoBehaviour
             //For Jumping once
         }
 
+
         if (inputs != Inputs.NONE)
         {
             if (inputs.HasFlag(Inputs.RIGHT))
             {
-                rb.AddForce(Vector2.right * TestSpeed);
-                GameData.Instance.playerState = GameData.PlayerState.RUN_RIGHT;
+                playerVelocity = TestSpeed;
             }
-            if (inputs.HasFlag(Inputs.LEFT))
+            else if (inputs.HasFlag(Inputs.LEFT))
             {
-                rb.AddForce(Vector2.left * TestSpeed);
-                GameData.Instance.playerState = GameData.PlayerState.RUN_LEFT;
+                playerVelocity = -TestSpeed;
             }
+
             if (inputs.HasFlag(Inputs.UP))
             {
-                rb.AddForce(Vector2.up * jumpPower);
-
-                GameData.Instance.playerState = GameData.PlayerState.JUMP;
+                jump = true;
             }
             if (inputs.HasFlag(Inputs.DOWN))
             {
@@ -207,9 +225,7 @@ public class PlayerController : MonoBehaviour
             }
             if (inputs.HasFlag(Inputs.RIGHT_RELEASE) || inputs.HasFlag(Inputs.LEFT_RELEASE))
             {
-                rb.velocity = Vector2.zero;
-                rb.angularVelocity = 0;
-                GameData.Instance.playerState = GameData.PlayerState.IDLE;
+                stopPlayer = true;
             }
             
         }

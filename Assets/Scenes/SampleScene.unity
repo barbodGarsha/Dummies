@@ -587,7 +587,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TestSpeed: 15
   jumpPower: 250
-  maxVelocity: 20
+  maxVelocity: 12
   animator: {fileID: 1772181825}
   rb: {fileID: 1772181821}
 --- !u!95 &1772181825
