@@ -18,6 +18,26 @@ public class PlayerView : MonoBehaviour
     void HandleOnPlayerStateChange(object sender, EventArgs e) 
     {
         //AnimationControl
+        switch (GameData.Instance.playerState)
+        {
+            case GameData.PlayerState.IDLE:
+                animator.Play("Idle");
+                break;
+            case GameData.PlayerState.RUN_RIGHT:
+                animator.Play("Run_Right");
+                break;
+            case GameData.PlayerState.RUN_LEFT:
+                animator.Play("Run_Left");
+                break;
+            case GameData.PlayerState.JUMP:
+                animator.Play("Jump");
+                break;
+            case GameData.PlayerState.PUSH_RIGHT:
+                animator.Play("Push_Right");
+                break;
+            default:
+                break;
+        }
     }
 
 

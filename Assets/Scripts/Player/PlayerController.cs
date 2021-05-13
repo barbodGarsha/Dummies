@@ -108,6 +108,10 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(Vector2.up * jumpPower);
             GameData.Instance.playerState = GameData.PlayerState.JUMP;
+            if (OnPlayerStateChange != null)
+            {
+                OnPlayerStateChange(this, EventArgs.Empty);
+            }
             jump = false;
             landed = false;
         }
@@ -125,45 +129,55 @@ public class PlayerController : MonoBehaviour
 
         if (landed)
         {
-
-            Debug.Log(GameData.Instance.playerState);
             if (rb.velocity.x < 0.1f && rb.velocity.x > -0.1f)
             {
                 GameData.Instance.playerState = GameData.PlayerState.IDLE;
+                if (OnPlayerStateChange != null)
+                {
+                    OnPlayerStateChange(this, EventArgs.Empty);
+                }
             }
             else if (rb.velocity.x > 0.1f)
             {
                 GameData.Instance.playerState = GameData.PlayerState.RUN_RIGHT;
+                if (OnPlayerStateChange != null)
+                {
+                    OnPlayerStateChange(this, EventArgs.Empty);
+                }
             }
             else
             {
                 GameData.Instance.playerState = GameData.PlayerState.RUN_LEFT;
+                if (OnPlayerStateChange != null)
+                {
+                    OnPlayerStateChange(this, EventArgs.Empty);
+                }
             }
         }
 
 
-        
-        
+
+
         //if (Input.GetKey(KeyCode.RightArrow))
-         //{
-         //    rb.AddForce(Vector2.right * TestSpeed);
-         //    if (OnPlayerStateChange != null)
-         //    {
-         //        OnPlayerStateChange(this, EventArgs.Empty);
-         //    }
-         //}
-         //else if (Input.GetKey(KeyCode.LeftArrow))
-         //{
-         //    rb.AddForce(Vector2.left * TestSpeed);
-         //    if (OnPlayerStateChange != null)
-         //    {
-         //        OnPlayerStateChange(this, EventArgs.Empty);
-         //    }
-         //}
-         //if (Input.GetKeyDown(KeyCode.UpArrow))
-         //{
-         //    rb.AddForce(Vector2.up * jumpPower);
-         //}
+        //{
+        //    rb.AddForce(Vector2.right * TestSpeed);
+        //    if (OnPlayerStateChange != null)
+        //    {
+        //        OnPlayerStateChange(this, EventArgs.Empty);
+        //    }
+        //}
+        //else if (Input.GetKey(KeyCode.LeftArrow))
+        //{
+        //    rb.AddForce(Vector2.left * TestSpeed);
+        //if (OnPlayerStateChange != null)
+        //{
+        //    OnPlayerStateChange(this, EventArgs.Empty);
+        //}
+        //}
+        //if (Input.GetKeyDown(KeyCode.UpArrow))
+        //{
+        //    rb.AddForce(Vector2.up * jumpPower);
+        //}
     }
 
     bool landed = true;
