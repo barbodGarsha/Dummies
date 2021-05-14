@@ -196,27 +196,6 @@ public class PlayerController : MonoBehaviour
             inputs &= (Inputs.LEFT | Inputs.RIGHT) ^ Inputs.ALL;
         }
 
-        if (inputs.HasFlag(Inputs.RIGHT_RELEASE))
-        {
-            if (GameData.Instance.playerState != GameData.PlayerState.RUN_RIGHT)
-            {
-                inputs &= Inputs.RIGHT_RELEASE ^ Inputs.ALL;
-            }
-        }
-
-        if (inputs.HasFlag(Inputs.LEFT_RELEASE))
-        {
-            if (GameData.Instance.playerState != GameData.PlayerState.RUN_LEFT)
-            {
-                inputs &= Inputs.LEFT_RELEASE ^ Inputs.ALL;
-            }
-        }
-
-        if (inputs.HasFlag(Inputs.UP))
-        {
-            //For Jumping once
-        }
-
 
         if (inputs != Inputs.NONE)
         {
@@ -239,9 +218,17 @@ public class PlayerController : MonoBehaviour
             }
             if (inputs.HasFlag(Inputs.RIGHT_RELEASE) || inputs.HasFlag(Inputs.LEFT_RELEASE))
             {
-                stopPlayer = true;
+                if (GameData.Instance.playerState != GameData.PlayerState.JUMP)
+                {
+                    stopPlayer = true;
+                }
+                else
+                {
+                    playerVelocity = 0;
+                }
             }
             
+
         }
 
         
