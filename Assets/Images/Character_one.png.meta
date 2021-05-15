@@ -20,6 +20,9 @@ TextureImporter:
   - first:
       213: -3420907362868593798
     second: Character_one_5
+  - first:
+      213: -3703159621833851104
+    second: Character_one_6
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -136,8 +139,8 @@ TextureImporter:
         y: 312
         width: 216
         height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -157,8 +160,8 @@ TextureImporter:
         y: 312
         width: 216
         height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -178,8 +181,8 @@ TextureImporter:
         y: 312
         width: 264
         height: 120
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -199,8 +202,8 @@ TextureImporter:
         y: 336
         width: 216
         height: 168
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -220,8 +223,8 @@ TextureImporter:
         y: 312
         width: 216
         height: 168
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -237,12 +240,12 @@ TextureImporter:
       name: Character_one_5
       rect:
         serializedVersion: 2
-        x: 1344
+        x: 1345
         y: 312
         width: 216
         height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

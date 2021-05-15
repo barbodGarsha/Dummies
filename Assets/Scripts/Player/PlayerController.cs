@@ -28,10 +28,10 @@ public class PlayerController : MonoBehaviour
     public event EventHandler OnPlayerStateChange;
     public event EventHandler OnUserInput;
 
-    bool playerVelocityChanged = false, stopPlayer = false, jump = false;
+    bool playerVelocityChanged = false, stopPlayer = false, jump = false, push = false, landed = true;
     float playerVelocity = 0;
 
-    private void Start()
+    void Start()
     {
         OnUserInput+=HandleOnUserInput;
     }
@@ -101,12 +101,13 @@ public class PlayerController : MonoBehaviour
        
     }
 
-    //Movement
+    //Movement and State Machine
     void FixedUpdate()
     {
         if (jump)
         {
             rb.AddForce(Vector2.up * jumpPower);
+            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
             GameData.Instance.playerState = GameData.PlayerState.JUMP;
             if (OnPlayerStateChange != null)
             {
@@ -123,13 +124,14 @@ public class PlayerController : MonoBehaviour
             stopPlayer = false;
             playerVelocity = 0.0f;
         }
-        rb.AddForce(Vector2.right * playerVelocity);
-        rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-       
-
+        if (playerVelocity != 0)
+        {
+            rb.AddForce(Vector2.right * playerVelocity);
+            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
+        }
         if (landed)
         {
-            if (rb.velocity.x < 0.1f && rb.velocity.x > -0.1f)
+            if (rb.velocity.x < 0.1f && rb.velocity.x > -0.1f && GameData.Instance.playerState!= GameData.PlayerState.IDLE)
             {
                 GameData.Instance.playerState = GameData.PlayerState.IDLE;
                 if (OnPlayerStateChange != null)
@@ -137,15 +139,18 @@ public class PlayerController : MonoBehaviour
                     OnPlayerStateChange(this, EventArgs.Empty);
                 }
             }
-            else if (rb.velocity.x > 0.1f)
+            else if (rb.velocity.x > 0.1f && GameData.Instance.playerState != GameData.PlayerState.RUN_RIGHT)
             {
-                GameData.Instance.playerState = GameData.PlayerState.RUN_RIGHT;
-                if (OnPlayerStateChange != null)
+                if (!push)
                 {
-                    OnPlayerStateChange(this, EventArgs.Empty);
+                    GameData.Instance.playerState = GameData.PlayerState.RUN_RIGHT;
+                    if (OnPlayerStateChange != null)
+                    {
+                        OnPlayerStateChange(this, EventArgs.Empty);
+                    }
                 }
             }
-            else
+            else if(rb.velocity.x < -0.1f && GameData.Instance.playerState != GameData.PlayerState.RUN_LEFT)
             {
                 GameData.Instance.playerState = GameData.PlayerState.RUN_LEFT;
                 if (OnPlayerStateChange != null)
@@ -153,42 +158,48 @@ public class PlayerController : MonoBehaviour
                     OnPlayerStateChange(this, EventArgs.Empty);
                 }
             }
+            if (push)
+            {
+                GameData.Instance.playerState = GameData.PlayerState.PUSH_RIGHT;
+                if (OnPlayerStateChange != null)
+                {
+                    OnPlayerStateChange(this, EventArgs.Empty);
+                }
+            }
         }
-
-
-
-
-        //if (Input.GetKey(KeyCode.RightArrow))
-        //{
-        //    rb.AddForce(Vector2.right * TestSpeed);
-        //    if (OnPlayerStateChange != null)
-        //    {
-        //        OnPlayerStateChange(this, EventArgs.Empty);
-        //    }
-        //}
-        //else if (Input.GetKey(KeyCode.LeftArrow))
-        //{
-        //    rb.AddForce(Vector2.left * TestSpeed);
-        //if (OnPlayerStateChange != null)
-        //{
-        //    OnPlayerStateChange(this, EventArgs.Empty);
-        //}
-        //}
-        //if (Input.GetKeyDown(KeyCode.UpArrow))
-        //{
-        //    rb.AddForce(Vector2.up * jumpPower);
-        //}
     }
 
-    bool landed = true;
+    
+    
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Box")
+        {
+            push = false;
+        }
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Ground")
+        Collider2D collider = collision.collider;
+        Vector3 contactPoint = collision.contacts[0].point;
+        Vector3 center = collider.bounds.center;
+
+        bool right = contactPoint.x < center.x;
+        bool top = contactPoint.y < center.y;
+
+        if (collision.gameObject.name=="Ground")
         {
             landed = true;
         }
+        if (collision.gameObject.name == "Box")
+        {
+            if (landed && right)
+            {
+                push = true;
+            }
+        }
     }
-    //Input Check and State Machine
+    //Input Check 
     void HandleOnUserInput(object sender, EventArgs e)
     {
         if (inputs.HasFlag(Inputs.RIGHT) && inputs.HasFlag(Inputs.LEFT))
