@@ -22,14 +22,13 @@ public class PlayerController : MonoBehaviour
 
     public float TestSpeed, jumpPower, maxVelocity;
 
-    public Animator animator;
     public Rigidbody2D rb;
     public BoxCollider2D boxColider;
 
     public event EventHandler OnPlayerStateChange;
     public event EventHandler OnUserInput;
 
-    bool playerVelocityChanged = false, stopPlayer = false, jump = false, push = false, landed = true;
+    bool stopPlayer = false, jump = false, push = false, landed = true;
     float playerVelocity = 0;
 
     void Start()
@@ -107,15 +106,19 @@ public class PlayerController : MonoBehaviour
     {
         if (jump)
         {
-            rb.AddForce(Vector2.up * jumpPower);
-            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
-            GameData.Instance.playerState = GameData.PlayerState.JUMP;
-            if (OnPlayerStateChange != null)
+            if (landed)
             {
-                OnPlayerStateChange(this, EventArgs.Empty);
+                rb.AddForce(Vector2.up * jumpPower);
+                rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVelocity);
+                GameData.Instance.playerState = GameData.PlayerState.JUMP;
+                if (OnPlayerStateChange != null)
+                {
+                    OnPlayerStateChange(this, EventArgs.Empty);
+                }
+                landed = false;
             }
             jump = false;
-            landed = false;
+
         }
         if (stopPlayer)
         {
@@ -159,7 +162,7 @@ public class PlayerController : MonoBehaviour
                     OnPlayerStateChange(this, EventArgs.Empty);
                 }
             }
-            if (push)
+            if (push && GameData.Instance.playerState == GameData.PlayerState.RUN_RIGHT)
             {
                 GameData.Instance.playerState = GameData.PlayerState.PUSH_RIGHT;
                 if (OnPlayerStateChange != null)
@@ -168,11 +171,24 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-       
+        
     }
 
-    
-    
+    void landedCheck()
+    {
+        float offsetX = 0.3f, offsetY = 0.1f;
+        Vector2 bottomLeft = new Vector2(boxColider.bounds.center.x - boxColider.bounds.extents.x + offsetX, boxColider.bounds.center.y - boxColider.bounds.extents.y - offsetY);
+        Vector2 bottomRight = new Vector2(boxColider.bounds.center.x + boxColider.bounds.extents.x - offsetX, boxColider.bounds.center.y - boxColider.bounds.extents.y - offsetY);
+
+        if (Physics2D.OverlapArea(bottomLeft, bottomRight))
+        {
+            if (Physics2D.OverlapArea(bottomLeft, bottomRight).gameObject.name != "Player")
+            {
+                landed = true;
+            }
+        }
+    }
+
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.name == "Box")
@@ -187,19 +203,15 @@ public class PlayerController : MonoBehaviour
         Vector3 center = collider.bounds.center;
 
         bool right = contactPoint.x < center.x;
-        
+
         if (collision.gameObject.name=="Ground")
         {
             landed = true;
         }
         if (collision.gameObject.name == "Box")
         {
-            Vector2 bottomLeft = new Vector2(boxColider.bounds.center.x - boxColider.bounds.extents.x + 0.5f, boxColider.bounds.center.y + boxColider.bounds.extents.y);
-            Vector2 bottomRight = new Vector2(boxColider.bounds.center.x + boxColider.bounds.extents.x - 0.5f, boxColider.bounds.center.y + boxColider.bounds.extents.y);
-            if (Physics2D.OverlapArea(bottomLeft, bottomRight))
-            {
-                landed = true;
-            }
+
+            landedCheck();
             if (landed && right)
             {
                 push = true;
