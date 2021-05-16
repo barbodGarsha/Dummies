@@ -1209,6 +1209,7 @@ MonoBehaviour:
   maxVelocity: 12
   animator: {fileID: 1772181825}
   rb: {fileID: 1772181821}
+  boxColider: {fileID: 1772181822}
 --- !u!95 &1772181825
 Animator:
   serializedVersion: 3

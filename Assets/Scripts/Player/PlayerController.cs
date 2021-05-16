@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
 
     public Animator animator;
     public Rigidbody2D rb;
+    public BoxCollider2D boxColider;
 
     public event EventHandler OnPlayerStateChange;
     public event EventHandler OnUserInput;
@@ -167,6 +168,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+       
     }
 
     
@@ -185,14 +187,19 @@ public class PlayerController : MonoBehaviour
         Vector3 center = collider.bounds.center;
 
         bool right = contactPoint.x < center.x;
-        bool top = contactPoint.y < center.y;
-
+        
         if (collision.gameObject.name=="Ground")
         {
             landed = true;
         }
         if (collision.gameObject.name == "Box")
         {
+            Vector2 bottomLeft = new Vector2(boxColider.bounds.center.x - boxColider.bounds.extents.x + 0.5f, boxColider.bounds.center.y + boxColider.bounds.extents.y);
+            Vector2 bottomRight = new Vector2(boxColider.bounds.center.x + boxColider.bounds.extents.x - 0.5f, boxColider.bounds.center.y + boxColider.bounds.extents.y);
+            if (Physics2D.OverlapArea(bottomLeft, bottomRight))
+            {
+                landed = true;
+            }
             if (landed && right)
             {
                 push = true;
